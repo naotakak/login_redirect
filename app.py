@@ -1,8 +1,8 @@
 '''
-Naotaka Kinoshita, Joyce Wu
+Jasper Cheung, Naotaka Kinoshita
 SoftDev1 pd7
-HW07 -- Do I Know You?
-2017-10-05
+HW08 -- Do I Know You - with redirect?
+2017-10-06
 '''
 
 from flask import Flask, render_template, request, session, redirect, url_for
