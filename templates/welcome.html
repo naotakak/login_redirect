@@ -1,11 +1,12 @@
-<html>
-<head>
-  <title>Welcome!</title>
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block title %}
+Welcome {{username}}!
+{% endblock %}
+
+{% block body %}
   Hi, {{username}}. Nice to meet you.<br>
-  <form action="/logout" method="get">
+  <form action="/logout" method="post">
     <input type="submit" value="logout" name="log"></input>
   </form>
-</body>
-</html>
+{% endblock %}

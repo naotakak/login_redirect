@@ -11,47 +11,58 @@ import os
 app = Flask(__name__)
 #secret key created for session specific to computer
 app.secret_key = os.urandom(32)
+
 #hardcoded account username and password
 username = "bob"
 pw = "bye"
 
-@app.route("/")
+def authen(u, p):
+    if u == username and p == pw:
+        return "good"
+    return "bad"
+
+@app.route('/')
 def hello():
-    #checks if computer is already logged in
     print session
-    if("username" in session and session.get('username') == username):
-        return render_template("welcome.html", username = username)
-        #return redirect(url_for('
-    #if not, return login template
-    print url_for('login')
-    return render_template("login.html")
-    #print url_for(login)
-    #return redirect(url_for('login', username = ""))
+    if 'username' not in session:
+        return render_template('login.html') #add error messages here
+    return redirect(url_for('login'))
+    
+@app.route("/auth", methods = ['POST'])
+def auth():
+    username = request.form['user']
+    password = request.form['password']
+    
+    print ("USERNAME: " + username)
+    print ("PASSWORD: " + password)
 
-@app.route("/login", methods=["GET"])
-def login():
-    dict = request.args
-    #checks to see if username and password is correct
-    #returns error page if account information does not match
-    if(dict["user"] != username):
-        return render_template("error.html", error="bad username")
-    if(dict["password"] != pw):
-        return render_template("error.html", error="bad password")
-    #renders welcome template if account information matches
+    authd = authen(username, password);
+    
+    print ("AUTHD: " + authd)
+
+    if authd == "good":
+        session['username'] = username
+        return redirect(url_for('login'))
+    
     else:
-        #print session
-        session["username"] = username
-        #print session
-        return render_template("welcome.html", username=username)
+        #return redirect(url_for('hello'))
+        return render_template('login.html', error = "Bad username or password")
 
-@app.route("/logout", methods=["GET"])
-def logout():
-    #verifies if logout button was clicked
-    #print request.form
-    if(request.args["log"] == "logout"):
-        session.pop("username", None) #removes username from session, logging out
-        #return render_template("login.html") #returns to login page
+@app.route("/login")
+def login():
+    if 'username' not in session:
         return redirect(url_for('hello'))
+    return render_template('welcome.html', username = session['username'])
+
+@app.route("/logout", methods = ['POST'])
+def logout():
+    print ("\n\n\nLOGOUT")
+    print session
+    if 'username' in session:
+        session.pop('username')
+        print "LOGGED OUT"
+        print session
+    return redirect(url_for('hello'))
 
 if __name__ == "__main__":
     app.debug = True
